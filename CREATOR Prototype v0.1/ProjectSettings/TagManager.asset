@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Item
+  - Wall Item
+  - Floor Item
+  - Small Item
+  - Wall Collider
+  - Floor Collider
+  - Floor App Collider
+  - UI
+  - Floor Item Collider
+  - Front Wall Collider
+  - Inventory Item
+  - Surface Collider
+  - Edge Collider
+  - Small Floor Item
+  - Small Floor Item Collider
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Items
+  - Collider
+  - Wall Item
+  - Floor Item
+  - Clickable Object
+  - Dialogue
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Studio BG
+    uniqueID: 3762737869
+    locked: 0
+  - name: Floor
+    uniqueID: 3245594579
+    locked: 0
+  - name: Walls
+    uniqueID: 68813899
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Items
+    uniqueID: 615922417
+    locked: 0
+  - name: Player
+    uniqueID: 1877649167
+    locked: 0
+  - name: Front Wall
+    uniqueID: 3508781245
+    locked: 0
+  - name: UI
+    uniqueID: 173616411
+    locked: 0
+  - name: Hero-Sprite
+    uniqueID: 1801665905
+    locked: 0
+  - name: Dialogue
+    uniqueID: 375732153
+    locked: 0

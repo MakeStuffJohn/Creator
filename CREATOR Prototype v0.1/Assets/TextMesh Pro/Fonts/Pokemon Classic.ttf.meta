@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: a146cc1ce82fb8342b25e06a7aee3cf6
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Pokemon Classic
+  fontNames:
+  - Pokemon Classic
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: e21cbf33a7e083b44b179fb3c07adbc0, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
