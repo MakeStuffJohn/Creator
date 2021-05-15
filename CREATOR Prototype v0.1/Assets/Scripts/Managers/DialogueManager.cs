@@ -47,6 +47,7 @@ public class DialogueManager : MonoBehaviour
 
     private GameManager gameManager;
     private ItemDatabase itemDatabase;
+    private PlayerDetails playerDetails;
     private TextMeshPro currentText;
     private TextMeshPro response1;
     private TextMeshPro response2;
@@ -56,6 +57,7 @@ public class DialogueManager : MonoBehaviour
     {
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         itemDatabase = GameObject.Find("Item Database").GetComponent<ItemDatabase>();
+        playerDetails = GameObject.Find("Player Details").GetComponent<PlayerDetails>();
         currentText = dialogueText.GetComponent<TextMeshPro>();
         response1 = playerResponse1.GetComponent<TextMeshPro>();
         response2 = playerResponse2.GetComponent<TextMeshPro>();
@@ -183,6 +185,9 @@ public class DialogueManager : MonoBehaviour
         switch (richText)
         {
             // Custom rich texts:
+            /* case "<pn>": // Add player name.
+                currentText.text += playerDetails.playerName;
+                break; */
             case "</n>": // Add line break.
                 currentText.text += "\r\n";
                 break;
@@ -270,7 +275,7 @@ public class DialogueManager : MonoBehaviour
     {
         int currentIndex = 0;
         int startOfWord = 0;
-        int trueStartOfWord = 0;
+        int trueStartOfWord = -1; // (So that rich text at the beginning of dialogue doesn't have a space before it.)
         int endOfWord = 0;
         bool isRichText = false;
         string richText = "";
@@ -297,6 +302,11 @@ public class DialogueManager : MonoBehaviour
                 {
                     startOfWord = 0;
                     endOfWord = 0;
+                }
+                else if (richText == "<pn>")
+                {
+                    AddWordToDialogue(trueStartOfWord, playerDetails.playerName, richText.Length);
+                    // endOfWord += playerDetails.playerName.Length;
                 }
                 else if (richText == "<big>")
                 {
@@ -339,6 +349,21 @@ public class DialogueManager : MonoBehaviour
             {
                 richText += letter;
             }
+        }
+    }
+
+    private void AddWordToDialogue(int index, string word, int richTextLength)
+    {
+        char[] wordArray = word.ToCharArray();
+
+        // Remove rich text from parsed dialogue:
+        for (int i = 1; i < richTextLength; i++)
+            parsedDialogue.RemoveAt(index + i);
+
+        for (int i = 0; i < wordArray.Length; i++)
+        {
+            int addToIndex = i + 1;
+            parsedDialogue.Insert((index + addToIndex), wordArray[i]);
         }
     }
 
