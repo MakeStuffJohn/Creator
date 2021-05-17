@@ -4328,8 +4328,8 @@ MonoBehaviour:
     playerResponds: 1
     playerResponseOptions:
     - '* Tenn-eh, eh?'
-    - '* Hi, I''m INSERTYOURNAMEHERE.'
-    - '* [Lie.] Hi, I''m not INSERTYOURNAMEHERE.'
+    - '* Hi, I''m <b>INSERTYOURNAMEHERE.</b>'
+    - '* [Lie.] Hi, I''m <i>not</i> <b>INSERTYOURNAMEHERE.</b>'
     playerResponseID: ed8a0100ee8a0100ef8a0100
     hasBeenSaid: 0
     isRelevant: 0

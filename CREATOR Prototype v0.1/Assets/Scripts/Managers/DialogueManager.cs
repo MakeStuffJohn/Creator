@@ -27,6 +27,8 @@ public class DialogueManager : MonoBehaviour
 
     private int index;
     private int id;
+    private int response1Length;
+    private int response2Length;
     private string[] dialogueArray;
     private List<char> parsedDialogue = new List<char>();
     private Vector2 activePos = new Vector2(0, 0);
@@ -59,6 +61,7 @@ public class DialogueManager : MonoBehaviour
         itemDatabase = GameObject.Find("Item Database").GetComponent<ItemDatabase>();
         playerDetails = GameObject.Find("Player Details").GetComponent<PlayerDetails>();
         currentText = dialogueText.GetComponent<TextMeshPro>();
+        // Might not need these anymore?
         response1 = playerResponse1.GetComponent<TextMeshPro>();
         response2 = playerResponse2.GetComponent<TextMeshPro>();
         response3 = playerResponse3.GetComponent<TextMeshPro>();
@@ -374,32 +377,33 @@ public class DialogueManager : MonoBehaviour
         switch (activeDialogue.playerResponseOptions.Length)
         {
             case 1:
-                playerResponse1.SetActive(true);
-                response1.text = activeDialogue.playerResponseOptions[0];
+                playerResponse1.SetActive(true); // Activate text box for player response.
+                ParseResponse(1);
+                currentText = dialogueText.GetComponent<TextMeshPro>();
                 break;
             case 2:
                 playerResponse1.SetActive(true);
                 playerResponse2.SetActive(true);
-                response1.text = activeDialogue.playerResponseOptions[0];
-                response2.text = activeDialogue.playerResponseOptions[1];
+                ParseResponse(1);
+                ParseResponse(2);
                 SetResponseTextPosition();
+                currentText = dialogueText.GetComponent<TextMeshPro>();
                 break;
             case 3:
                 playerResponse1.SetActive(true);
                 playerResponse2.SetActive(true);
-                playerResponse3.SetActive(true);
-                response1.text = activeDialogue.playerResponseOptions[0];
-                response2.text = activeDialogue.playerResponseOptions[1];
-                response3.text = activeDialogue.playerResponseOptions[2];
+                playerResponse3.SetActive(true); 
+                ParseResponse(1);
+                ParseResponse(2);
+                ParseResponse(3);
                 SetResponseTextPosition();
+                currentText = dialogueText.GetComponent<TextMeshPro>();
                 break;
         }
     }
 
     void SetResponseTextPosition()
     {
-        int response1Length = response1.text.Length;
-        int response2Length = response2.text.Length;
         bool pos1 = false;
         bool pos2 = false;
         bool pos3 = false;
@@ -442,6 +446,72 @@ public class DialogueManager : MonoBehaviour
                 playerResponse3.transform.position = response3ThirdPos;
             }
         }
+    }
+
+    void ParseResponse(int response)
+    {
+        int charCount = 0;
+        bool isRichText = false;
+        string richText = "";
+        List<char> parsedResponse = new List<char>();
+
+        // Set text and length of response.
+        switch (response)
+        {
+            case 1:
+                response1.text = "";
+                currentText = playerResponse1.GetComponent<TextMeshPro>();
+                parsedResponse = activeDialogue.playerResponseOptions[0].ToList();
+                break;
+            case 2:
+                response2.text = "";
+                currentText = playerResponse2.GetComponent<TextMeshPro>();
+                parsedResponse = activeDialogue.playerResponseOptions[1].ToList();
+                break;
+            case 3:
+                response3.text = "";
+                currentText = playerResponse3.GetComponent<TextMeshPro>();
+                parsedResponse = activeDialogue.playerResponseOptions[2].ToList();
+                break;
+            default:
+                break;
+        }
+
+        // Counts the non-rich-text characters in the player response option:
+        for (int i = 0; i < parsedResponse.Count; i++)
+        {
+            char letter = parsedResponse[i];
+
+            if (letter == '<')
+                isRichText = true;
+            else if (letter == '>')
+                isRichText = false;
+
+            if (!isRichText)
+            {
+                if (richText != "")
+                {
+                    richText += letter;
+                    RichText(richText);
+                    richText = ""; // Then clear the richText.
+                }
+                else
+                {
+                    currentText.text += letter;
+                    charCount++;
+                }
+            }
+            else if (isRichText)
+            {
+                richText += letter;
+            }
+        }
+
+        // Set character length of response:
+        if (response == 1)
+            response1Length = charCount;
+        else if (response == 2)
+            response2Length = charCount;
     }
 
     void PlayerResponseChosen(int response)
