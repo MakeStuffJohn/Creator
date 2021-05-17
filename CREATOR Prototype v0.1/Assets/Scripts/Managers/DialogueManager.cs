@@ -184,10 +184,7 @@ public class DialogueManager : MonoBehaviour
     {
         switch (richText)
         {
-            // Custom rich texts:
-            /* case "<pn>": // Add player name.
-                currentText.text += playerDetails.playerName;
-                break; */
+            // CUSTOM RICH TEXTS:
             case "</n>": // Add line break.
                 currentText.text += "\r\n";
                 break;
@@ -225,7 +222,7 @@ public class DialogueManager : MonoBehaviour
                 autoSkipText = true;
                 break;
 
-            // Color-changing rich texts:
+            // COLOR-CHANGING RICH TEXTS:
             case "<red>":
                 currentText.text += "<color=red>";
                 break;
@@ -236,7 +233,7 @@ public class DialogueManager : MonoBehaviour
                 currentText.text += "</color>";
                 break;
 
-            // Size-changing rich texts:
+            // SIZE-CHANGING RICH TEXTS:
             case "<big>":
                 currentText.text += "<size=" + bigFont + ">";
                 break;
@@ -247,7 +244,7 @@ public class DialogueManager : MonoBehaviour
                 currentText.text += "</size>";
                 break;
 
-            // ID-based rich texts:
+            // ID-BASED RICH TEXTS:
             case string s when (s[1] == '1'):
                 id = ConvertIDToInt(richText);
                 break;
@@ -264,7 +261,7 @@ public class DialogueManager : MonoBehaviour
                 id = 0;
                 break;
 
-            // Actual rich text:
+            // ACTUAL RICH TEXT:
             default:
                 currentText.text += richText;
                 break;
@@ -273,7 +270,7 @@ public class DialogueManager : MonoBehaviour
 
     void ParseWords()
     {
-        int currentIndex = 0;
+        int currentIndex = 0; // Tells us where we are in the sentence/line.
         int startOfWord = 0;
         int trueStartOfWord = -1; // (So that rich text at the beginning of dialogue doesn't have a space before it.)
         int endOfWord = 0;
@@ -303,11 +300,6 @@ public class DialogueManager : MonoBehaviour
                     startOfWord = 0;
                     endOfWord = 0;
                 }
-                else if (richText == "<pn>")
-                {
-                    AddWordToDialogue(trueStartOfWord, playerDetails.playerName, richText.Length);
-                    // endOfWord += playerDetails.playerName.Length;
-                }
                 else if (richText == "<big>")
                 {
                     // Adjust for bigger font.
@@ -317,12 +309,20 @@ public class DialogueManager : MonoBehaviour
                     // Adjust for smaller font.
                 }
 
-                richText = "";
+                // SITUATIONAL/PLAYER-DETERMINED WORDS:
+                else if (richText == "<pn>") // Add in the player's name.
+                {
+                    AddWordToDialogue(trueStartOfWord, playerDetails.playerName, richText.Length);
+                    i -= richText.Length; // Move the iterator back to compensate for the removed rich text.
+                }
+
+                richText = ""; // Reset rich text to empty.
             }
+            // Checks for line break when a "break" character is reached or when the dialogue is over.
             else if (((letter == ' ' || letter == '-' || letter == '/') && !isRichText) || i == parsedDialogue.Count - 1)
             {
                 // Resolve last word:
-                if (endOfWord >= textLine - 1)
+                if (endOfWord >= textLine - 1) // && letter == ' ') || (endOfWord >= textLine - 3 && letter != ' '))
                 {
                     // Add line break:
                     parsedDialogue.Insert((trueStartOfWord + 1), '<');
@@ -331,12 +331,12 @@ public class DialogueManager : MonoBehaviour
                     parsedDialogue.Insert((trueStartOfWord + 4), '>');
                     i += 4;
 
-                    int wordLength = (endOfWord - startOfWord) - 1;
-                    currentIndex = wordLength;
+                    int wordLength = (endOfWord - startOfWord) - 1; // Determines how many characters into the new line the break after the word is.
+                    currentIndex = wordLength; // Sets current index to that break.
                 }
 
                 // Then set up new word:
-                startOfWord = currentIndex;
+                startOfWord = currentIndex; 
                 trueStartOfWord = i;
                 currentIndex++;
             }
@@ -357,8 +357,8 @@ public class DialogueManager : MonoBehaviour
         char[] wordArray = word.ToCharArray();
 
         // Remove rich text from parsed dialogue:
-        for (int i = 1; i < richTextLength; i++)
-            parsedDialogue.RemoveAt(index + i);
+        for (int i = 0; i < richTextLength; i++)
+            parsedDialogue.RemoveAt(index + 1);
 
         for (int i = 0; i < wordArray.Length; i++)
         {
