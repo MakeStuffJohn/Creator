@@ -54,32 +54,34 @@ public class DialogueManager : MonoBehaviour
     private TextMeshPro response1;
     private TextMeshPro response2;
     private TextMeshPro response3;
+    private TextMeshPro mainTextBox;
 
     void Awake()
     {
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         itemDatabase = GameObject.Find("Item Database").GetComponent<ItemDatabase>();
         playerDetails = GameObject.Find("Player Details").GetComponent<PlayerDetails>();
-        currentText = dialogueText.GetComponent<TextMeshPro>();
-        // Might not need these anymore?
+        mainTextBox = dialogueText.GetComponent<TextMeshPro>();
         response1 = playerResponse1.GetComponent<TextMeshPro>();
         response2 = playerResponse2.GetComponent<TextMeshPro>();
         response3 = playerResponse3.GetComponent<TextMeshPro>();
 
-        PlayerResponseButton.onPlayerResponse += PlayerResponseChosen;
+        currentText = mainTextBox; // CurrentText determines which text box is being typed into.
 
-        transform.position = inactivePos;
-        dialogueText = null;
+        PlayerResponseButton.onPlayerResponse += PlayerResponseChosen; // Listens for when a player response is chosen.
+
+        transform.position = inactivePos; // Places dialogue UI offscreen while not in use.
+        dialogueText = null; // Why is this here?? This breaks things.
     }
 
     void Update()
     {
-        if (gameManager.dialogueIsActive) // Have something set dialogue to active, dummy.
+        if (gameManager.dialogueIsActive)
         {
             if (isTypingOut || playerIsResponding)
-                continueArrow.gameObject.SetActive(false);
+                continueArrow.gameObject.SetActive(false); // Arrow is turned off if dialogue is typing out or player is responding.
             else
-                continueArrow.gameObject.SetActive(true);
+                continueArrow.gameObject.SetActive(true); // Otherwise, the arrow is turned on.
         }
     }
 
@@ -88,7 +90,7 @@ public class DialogueManager : MonoBehaviour
         bool isRichText = false;
         string richText = "";
 
-        ParseWords();
+        ParseWords(); // Figures out where to add line breaks in the dialogue.
 
         isTypingOut = true;
         // Cue speaking stem in music.
@@ -104,24 +106,26 @@ public class DialogueManager : MonoBehaviour
             {
                 if (richText != "")
                 {
+                    // If there's rich text to decipher, it runs the text through the RichText method:
                     richText += letter;
                     RichText(richText);
                     richText = ""; // Then clear the richText.
                 }
                 else
-                    currentText.text += letter;
+                    currentText.text += letter; // If not rich text, adds the letter to the dialogue.
 
-                yield return new WaitForSeconds(typeOutSpeed);
+                yield return new WaitForSeconds(typeOutSpeed); // The delay between letters, creating the type-out effect.
             }
             else if (isRichText)
             {
-                richText += letter;
+                richText += letter; // Adds letters to the rich text string if they're between '<' and '>'.
             }
         }
 
         isTypingOut = false;
         if (typeOutSpeed != defaultTypeSpeed)
         {
+            // Resets type speed and speaking stem speed to defaults:
             typeOutSpeed = defaultTypeSpeed;
             // Reset speaking stem speed.
         }
@@ -134,23 +138,27 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void StartDialogue(GameObject collab, Dialogue dialogue)
+    public void StartDialogue(GameObject collab, Dialogue dialogue) // (Variables fed in from dialogue script.)
     {
-        index = 0;
+        // Reset text and index.
+        index = 0; // Keeps track of which line of dialogue we're on.
         currentText.text = "";
         
+        // Set dialogue variables to new dialogue details:
         dialogueArray = dialogue.dialogueArray;
         activeCollaborator = collab;
         activeDialogue = dialogue;
 
         gameManager.dialogueIsActive = true;
 
+        // Event that tells NPCs and FXs when to change/activate sprites:
         if (onNewLineOfDialogue != null)
         {
             onNewLineOfDialogue(activeDialogue.collabReactions[index]);
+            // This might be a problem if we use this for FX, too. Can't just be collabReactions. Should be the Dialogue itself, plus the current index..
         }
 
-        transform.position = activePos;
+        transform.position = activePos; // Moves dialogue UI onto the screen.
         // Play reaction FX with switch statement. (Check if it's != ReactionFX.None first.)
         // Play player reaction FX with switch statement.
 
@@ -169,14 +177,14 @@ public class DialogueManager : MonoBehaviour
                 onNewLineOfDialogue(activeDialogue.collabReactions[index]); // Updating sprite reactions.
             }
 
-            StartCoroutine(TypeOutRoutine()); // Running next line of dialogue.
+            StartCoroutine(TypeOutRoutine()); // Types out next line of dialogue.
         }
         else if (activeDialogue.playerResponds)
         {
             currentText.text = "";
             ActivatePlayerResponses();
         }
-        else
+        else // If there is no further dialogue, UI is removed and game is resumed.
         {
             gameManager.dialogueIsActive = false;
             transform.position = inactivePos;
@@ -275,7 +283,7 @@ public class DialogueManager : MonoBehaviour
     {
         int currentIndex = 0; // Tells us where we are in the sentence/line.
         int startOfWord = 0;
-        int trueStartOfWord = -1; // (So that rich text at the beginning of dialogue doesn't have a space before it.)
+        int trueStartOfWord = -1; // (Set to -1 so that rich text at the beginning of dialogue doesn't have a space before it.)
         int endOfWord = 0;
         bool isRichText = false;
         string richText = "";
@@ -379,7 +387,7 @@ public class DialogueManager : MonoBehaviour
             case 1:
                 playerResponse1.SetActive(true); // Activate text box for player response.
                 ParseResponse(1);
-                currentText = dialogueText.GetComponent<TextMeshPro>();
+                currentText = mainTextBox;
                 break;
             case 2:
                 playerResponse1.SetActive(true);
@@ -387,7 +395,7 @@ public class DialogueManager : MonoBehaviour
                 ParseResponse(1);
                 ParseResponse(2);
                 SetResponseTextPosition();
-                currentText = dialogueText.GetComponent<TextMeshPro>();
+                currentText = mainTextBox;
                 break;
             case 3:
                 playerResponse1.SetActive(true);
@@ -397,7 +405,7 @@ public class DialogueManager : MonoBehaviour
                 ParseResponse(2);
                 ParseResponse(3);
                 SetResponseTextPosition();
-                currentText = dialogueText.GetComponent<TextMeshPro>();
+                currentText = mainTextBox;
                 break;
         }
     }
@@ -455,7 +463,7 @@ public class DialogueManager : MonoBehaviour
         string richText = "";
         List<char> parsedResponse = new List<char>();
 
-        // Set text and length of response.
+        // 
         switch (response)
         {
             case 1:

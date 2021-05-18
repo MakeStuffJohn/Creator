@@ -9,7 +9,6 @@ public class TenneDialogue : MonoBehaviour
     public List<Dialogue> tenneQuest = new List<Dialogue>();
     public List<Dialogue> tenneSitch = new List<Dialogue>();
     public List<Dialogue> tenneBasic = new List<Dialogue>();
-    public List<Dialogue> tenneResponse = new List<Dialogue>();
 
     private int determinedDialogue;
     private int empty = -1;
@@ -22,6 +21,9 @@ public class TenneDialogue : MonoBehaviour
 
     // CRITICAL dialogue entries:
     private int introduction;
+    private int introRespo01;
+    private int introRespo02;
+    private int introRespo03;
 
     // QUEST dialogue entries:
     private int cactusQuestIntro;
@@ -30,11 +32,6 @@ public class TenneDialogue : MonoBehaviour
 
     // SITUATIONAL dialogue entries:
     private int roseLionReaction;
-
-    // RESPONSE dialogue entries:
-    private int introResponse01;
-    private int introResponse02;
-    private int introResponse03;
 
     private DialogueManager dialogueManager;
     private GameObject studioItems;
@@ -67,6 +64,12 @@ public class TenneDialogue : MonoBehaviour
         {
             if (dialogue.dialogueName == "Introduction")
                 introduction = tenneCrit.IndexOf(dialogue);
+            else if (dialogue.dialogueName == "Intro Respo 01")
+                introRespo01 = tenneCrit.IndexOf(dialogue);
+            else if (dialogue.dialogueName == "Intro Respo 02")
+                introRespo02 = tenneCrit.IndexOf(dialogue);
+            else if (dialogue.dialogueName == "Intro Respo 03")
+                introRespo03 = tenneCrit.IndexOf(dialogue);
         }
 
         foreach (Dialogue dialogue in tenneQuest)
@@ -83,16 +86,6 @@ public class TenneDialogue : MonoBehaviour
         {
             if (dialogue.dialogueName == "Rose Lion Reaction")
                 roseLionReaction = tenneSitch.IndexOf(dialogue);
-        }
-
-        foreach (Dialogue dialogue in tenneResponse)
-        {
-            if (dialogue.dialogueName == "Intro Response 01")
-                introResponse01 = tenneResponse.IndexOf(dialogue);
-            else if (dialogue.dialogueName == "Intro Response 02")
-                introResponse02 = tenneResponse.IndexOf(dialogue);
-            else if (dialogue.dialogueName == "Intro Response 03")
-                introResponse03 = tenneResponse.IndexOf(dialogue);
         }
     }
 
@@ -266,22 +259,22 @@ public class TenneDialogue : MonoBehaviour
             switch (response)
             {
                 case 101101:
-                    dia = introResponse01;
+                    dia = introRespo01;
                     isCritRespo = true;
                     break;
                 case 101102:
-                    dia = introResponse02;
+                    dia = introRespo02;
                     isCritRespo = true;
                     break;
                 case 101103:
-                    dia = introResponse03;
+                    dia = introRespo03;
                     isCritRespo = true;
                     break;
             }
 
             // Submit response dialogue:
             if (isCritRespo)
-                dialogueManager.StartDialogue(tenne, tenneResponse[dia]); // Fix the list once you move the responses.
+                dialogueManager.StartDialogue(tenne, tenneCrit[dia]);
             else if (isQuestRespo)
                 dialogueManager.StartDialogue(tenne, tenneQuest[dia]);
             else if (isSitchRespo)
