@@ -290,32 +290,32 @@ public class DialogueManager : MonoBehaviour
 
         parsedDialogue.Clear();
 
-        parsedDialogue = dialogueArray[index].ToList();
+        parsedDialogue = dialogueArray[index].ToList(); // Turns current dialogue string into list of characters.
 
         for (int i = 0; i < parsedDialogue.Count; i++)
         {
             char letter = parsedDialogue[i];
 
-            if (letter == '<')
+            if (letter == '<') // Start of rich text.
             {
                 isRichText = true;
                 richText += letter;
             }
-            else if (letter == '>')
+            else if (letter == '>') // End of rich text.
             {
                 isRichText = false;
                 richText += letter;
                 
-                if (richText == "</n>")
+                if (richText == "</n>") // Resets line/word count if rich text is a line break:
                 {
                     startOfWord = 0;
                     endOfWord = 0;
                 }
-                else if (richText == "<big>")
+                else if (richText == "<big>") // Accounts for width of larger font.
                 {
                     // Adjust for bigger font.
                 }
-                else if (richText == "<small>")
+                else if (richText == "<small>") // Accounts for width of smaller font.
                 {
                     // Adjust for smaller font.
                 }
@@ -329,34 +329,35 @@ public class DialogueManager : MonoBehaviour
 
                 richText = ""; // Reset rich text to empty.
             }
-            // Checks for line break when a "break" character is reached or when the dialogue is over.
+
+            // Checks for line break when a "break" character is reached or when the dialogue is over:
             else if (((letter == ' ' || letter == '-' || letter == '/') && !isRichText) || i == parsedDialogue.Count - 1)
             {
                 // Resolve last word:
                 if (endOfWord >= textLine - 1) // && letter == ' ') || (endOfWord >= textLine - 3 && letter != ' '))
                 {
-                    // Add line break:
+                    // Add line break via rich text:
                     parsedDialogue.Insert((trueStartOfWord + 1), '<');
                     parsedDialogue.Insert((trueStartOfWord + 2), '/');
                     parsedDialogue.Insert((trueStartOfWord + 3), 'n');
                     parsedDialogue.Insert((trueStartOfWord + 4), '>');
-                    i += 4;
+                    i += 4; // Moves iterator ahead to skip parsing new line break rich text.
 
                     int wordLength = (endOfWord - startOfWord) - 1; // Determines how many characters into the new line the break after the word is.
                     currentIndex = wordLength; // Sets current index to that break.
                 }
 
                 // Then set up new word:
-                startOfWord = currentIndex; 
+                startOfWord = currentIndex;
                 trueStartOfWord = i;
                 currentIndex++;
             }
-            else if (!isRichText)
+            else if (!isRichText) // If non-rich-text letter, continues parsing current word.
             {
                 endOfWord = currentIndex;
                 currentIndex++;
             }
-            else if (isRichText)
+            else if (isRichText) // If rich text, index ignores letters (because they won't appear in final dialogue.)
             {
                 richText += letter;
             }
@@ -365,12 +366,13 @@ public class DialogueManager : MonoBehaviour
 
     private void AddWordToDialogue(int index, string word, int richTextLength)
     {
-        char[] wordArray = word.ToCharArray();
+        char[] wordArray = word.ToCharArray(); // Convert added word string into a character array.
 
         // Remove rich text from parsed dialogue:
         for (int i = 0; i < richTextLength; i++)
             parsedDialogue.RemoveAt(index + 1);
 
+        // Add new word to parsed dialogue list at appropriate point, one character at a time:
         for (int i = 0; i < wordArray.Length; i++)
         {
             int addToIndex = i + 1;
@@ -386,8 +388,8 @@ public class DialogueManager : MonoBehaviour
         {
             case 1:
                 playerResponse1.SetActive(true); // Activate text box for player response.
-                ParseResponse(1);
-                currentText = mainTextBox;
+                ParseResponse(1); // Determines actual response length, filtering out (and running) rich text during claculation.
+                currentText = mainTextBox; // Resets currentText to the main text box after filling out all player responses.
                 break;
             case 2:
                 playerResponse1.SetActive(true);
@@ -416,6 +418,7 @@ public class DialogueManager : MonoBehaviour
         bool pos2 = false;
         bool pos3 = false;
 
+        // Determines position of SECOND player response text depending on the length of the first response:
         if (response1Length < textLine)
         {
             pos1 = true;
@@ -431,6 +434,7 @@ public class DialogueManager : MonoBehaviour
             pos3 = true;
         }
 
+        // Determines position of THIRD player response depending on the length of the first two responses:
         if (activeDialogue.playerResponseOptions.Length == 3)
         {
             if (response2Length < textLine)
@@ -463,7 +467,7 @@ public class DialogueManager : MonoBehaviour
         string richText = "";
         List<char> parsedResponse = new List<char>();
 
-        // 
+        // Determines which player response is being parsed:
         switch (response)
         {
             case 1:
